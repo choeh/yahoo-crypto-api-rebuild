@@ -127,3 +127,25 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Visual Studio Code folder
+.vscode
+
+# Windows generated
+.DS_Store
+
+# Aplications
+*.app
+*.exe
+*.war
+
+# Large media files
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
+# Temporary files
+_*/
