@@ -11,6 +11,15 @@ Download or git clone this repository. Unzip the downloaded file. Open up your t
 pip install -r requirements.txt
 ```
 
+If [Docker](https://www.docker.com) is installed on your computer, the application can be *containerized*. To build the *Docker* image, run in your local folder:
+```shell
+docker build -t yahoo-crypto-api .
+```
+To start a *Docker* container, run:
+```shell
+docker run --name scraper-api yahoo-crypto-api
+```
+
 ## Usage
 To start the `Yahoo Cryptocurrency` *Scraper* run:
 ```python
