@@ -1,5 +1,7 @@
 from autoscraper import AutoScraper
 import requests
+from fake_useragent import UserAgent
+from fp.fp import FreeProxy
 
 # Same rule ids for each run
 import random
@@ -24,8 +26,21 @@ uri = '/cryptocurrencies/'
 
 url = f'{domain}{uri}'
 
+# Request headers
+useragent = UserAgent(cache=False, use_cache_server=False)
+proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
+
+scraper.request_headers.update({
+  'User-Agent': useragent.firefox,
+  'Proxies': proxy.get()
+})
+
+session = requests.session()
+session.get(url, headers=scraper.request_headers)
+cookies = session.cookies.get_dict()
+
 # Build scraper
-result = scraper.build(url, wanted_dict=wanted_dict)
+result = scraper.build(url, wanted_dict=wanted_dict, request_args=dict(cookies=cookies))
 
 # Set rule aliases
 scraper.keep_rules(['rule_5e8i', 'rule_q71n', 'rule_hpoe', 'rule_vb9o', 'rule_oaed'])
