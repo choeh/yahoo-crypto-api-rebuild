@@ -1,0 +1,9 @@
+autoscraper
+pandas
+fastapi
+gunicorn
+uvicorn
+uvloop
+httptools
+fake-useragent
+free-proxy
