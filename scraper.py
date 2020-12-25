@@ -2,23 +2,53 @@ from autoscraper import AutoScraper
 import requests
 from fake_useragent import UserAgent
 from fp.fp import FreeProxy
+from copy import copy
 
 # Same rule ids for each run
 import random
 random.seed(42)
 
 
-# Initialize autoscraper
-scraper = AutoScraper()
+def initialize_request_args(url: str = ''):
+  # Initialize randomized user-agent and proxy
+  useragent = UserAgent(cache=False, use_cache_server=False)
+  proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
+  headers = {
+      'User-Agent': useragent.firefox,
+      'Proxies': proxy.get()
+  }
+  scraper_template.request_headers.update(headers)
 
-# Wanted entries (values to be updated directly before usage)
-wanted_dict = dict(
-    symbol=['BTC-USD'],
-    name=['Bitcoin USD'],
-    price=['23,620.90'],
-    logo=['https://s.yimg.com/uc/fin/img/reports-thumbnails/1.png'],
-    marketcap=['438.857B']
-)
+  # Initialize cookie
+  session = requests.session()
+  session.get(url, headers=scraper_template.request_headers)
+  return dict(
+    cookies = session.cookies.get_dict(),
+    headers = headers
+  )
+
+
+def build_scraper(wanted: dict = {}, model_name: str = 'yahoo_crypto'):
+  # Build scrapers
+  scraper = copy(scraper_template)
+  scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(url))
+  
+  # Display rules and get user input on which rules to keep and rule aliases
+  result = scraper.get_result_exact(url, grouped=True)
+  print([(key, value[0]) for key, value in result.items()])
+  rules_to_keep = [rule_id.strip() for rule_id in input('Enter rules to keep (comma separated): ').split(',')]
+  rule_aliases = {rule_id: alias.strip().title() for rule_id, alias in zip(rules_to_keep, input('Enter rule alias given rules (comma separated: ').split(','))}
+
+  # Set used rules and rule aliases 
+  scraper.keep_rules(rules_to_keep)
+  scraper.set_rule_aliases(rule_aliases)
+
+  # Store scraper in file
+  scraper.save(model_name)
+
+
+# Initialize autoscraper
+scraper_template = AutoScraper()
 
 # Screener url
 domain = 'https://finance.yahoo.com'
@@ -26,25 +56,12 @@ uri = '/cryptocurrencies/'
 
 url = f'{domain}{uri}'
 
-# Request headers
-useragent = UserAgent(cache=False, use_cache_server=False)
-proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
-
-scraper.request_headers.update({
-  'User-Agent': useragent.firefox,
-  'Proxies': proxy.get()
-})
-
-session = requests.session()
-session.get(url, headers=scraper.request_headers)
-cookies = session.cookies.get_dict()
-
-# Build scraper
-result = scraper.build(url, wanted_dict=wanted_dict, request_args=dict(cookies=cookies))
-
-# Set rule aliases
-scraper.keep_rules(['rule_5e8i', 'rule_q71n', 'rule_hpoe', 'rule_vb9o', 'rule_oaed'])
-scraper.set_rule_aliases({'rule_5e8i': 'Symbol', 'rule_q71n': 'Name', 'rule_hpoe': 'Price', 'rule_vb9o': 'Logo', 'rule_oaed': 'MarketCap'})
-
-# Store scraper in file
-scraper.save('yahoo_crypto')
+# Yahoo Crypto Scraper
+wanted = dict(
+    symbol=['BTC-USD'],
+    name=['Bitcoin USD'],
+    price=['23,620.90'],
+    logo=['https://s.yimg.com/uc/fin/img/reports-thumbnails/1.png'],
+    marketcap=['438.857B']
+)
+build_scraper(wanted=wanted, model_name='yahoo_crypto_2')
