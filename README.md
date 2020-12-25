@@ -37,3 +37,23 @@ python api.py
 To check if the server is running, checkout the *Api Documentation* at `http://localhost:8080/docs` in your browser.
 
 To retrieve the current `Yahoo Cryptocurrency` data, call the `http://localhost:8080/cryptos` api endpoint via your [Postman](https://www.postman.com) or [Insomnia](https://insomnia.rest) application or use your browser.
+
+
+## Alternatives
+The scraping implementation for the `Yahoo Cryptocurrency` *Screener* table data can also simply be done with [Pandas `read_html()`](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_html.html):
+```python
+import pandas as pd
+df = pd.read_html('https://finance.yahoo.com/cryptocurrencies/')
+
+data = df[0]
+```
+or [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/):
+```python
+import requests
+from bs4 import BeautifulSoup
+
+req = requests.get('https://finance.yahoo.com/cryptocurrencies/')
+soup = BeautifulSoup(req.content, 'html.parser')
+
+data = [tuple(cell.text for cell in row.find_all('td')) for row in soup.find_all('tr', class_='simpTblRow')]
+```
