@@ -32,7 +32,7 @@ def build_scraper(wanted: dict = {}, model_name: str = 'yahoo_crypto'):
   # Build scrapers
   scraper = copy(scraper_template)
   scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(url))
-  
+
   # Display rules and get user input on which rules to keep and rule aliases
   result = scraper.get_result_exact(url, grouped=True)
   print([(key, value[0]) for key, value in result.items()])
@@ -56,12 +56,21 @@ uri = '/cryptocurrencies/'
 
 url = f'{domain}{uri}'
 
-# Yahoo Crypto Scraper
-wanted = dict(
+# Yahoo Crypto Data Scraper
+data_wanted = dict(
     symbol=['BTC-USD'],
     name=['Bitcoin USD'],
     price=['23,620.90'],
     logo=['https://s.yimg.com/uc/fin/img/reports-thumbnails/1.png'],
     marketcap=['438.857B']
 )
-build_scraper(wanted=wanted, model_name='yahoo_crypto_2')
+build_scraper(wanted=data_wanted, model_name='yahoo_crypto_data')
+
+# Yahoo Crypto News Scraper
+news_wanted = dict(
+    news=['Bitcoin Tops $24.6K on Christmas Day, Sets New All-Time High',
+          'Can Bitcoin Hit $100,000 in 2021? Regulators and the Bulls may have to Battle it out!', 'The Crypto Daily – Movers and Shakers – December 25th, 2020'],
+    urls=['https://finance.yahoo.com/news/bitcoin-sets-time-high-24-125722098.html', 'https://finance.yahoo.com/news/bitcoin-hit-100-000-2021-051215840.html',
+          'https://finance.yahoo.com/news/crypto-daily-movers-shakers-december-010607662.html']
+)
+build_scraper(wanted=news_wanted, model_name='yahoo_crypto_news')
