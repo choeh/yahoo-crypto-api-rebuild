@@ -33,11 +33,13 @@ def build_scraper(wanted: dict = {}, model_name: str = 'yahoo_crypto'):
   scraper = copy(scraper_template)
   scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(url))
 
-  # Display rules and get user input on which rules to keep and rule aliases
+  # Retrieve unique rules and rule aliases computationally
   result = scraper.get_result_exact(url, grouped=True)
-  print([(key, value[0]) for key, value in result.items()])
-  rules_to_keep = [rule_id.strip() for rule_id in input('Enter rules to keep (comma separated): ').split(',')]
-  rule_aliases = {rule_id: alias.strip().title() for rule_id, alias in zip(rules_to_keep, input('Enter rule alias given rules (comma separated: ').split(','))}
+  unique_rules = {val[0]: key for key, val in result.items()}
+  rules_matching_wanted = {alias: rule_id for rule_value, rule_id in unique_rules.items() for alias, wanted_values in wanted.items() if rule_value in wanted_values}
+
+  rules_to_keep = list(rules_matching_wanted.values())
+  rule_aliases = {rule_id: alias.title() for alias, rule_id in rules_matching_wanted.items()}
 
   # Set used rules and rule aliases 
   scraper.keep_rules(rules_to_keep)
@@ -73,4 +75,4 @@ news_wanted = dict(
     urls=['https://finance.yahoo.com/news/bitcoin-sets-time-high-24-125722098.html', 'https://finance.yahoo.com/news/bitcoin-hit-100-000-2021-051215840.html',
           'https://finance.yahoo.com/news/crypto-daily-movers-shakers-december-010607662.html']
 )
-build_scraper(wanted=news_wanted, model_name='yahoo_crypto_news')
+build_scraper(wanted=news_wanted, model_name='yahoo_crypto_news_2')
