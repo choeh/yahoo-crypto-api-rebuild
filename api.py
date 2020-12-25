@@ -33,7 +33,7 @@ scraper = AutoScraper()
 scraper.load('yahoo_crypto')
 
 # Request headers
-useragent = UserAgent(cache=False, use_cache_server=False)
+useragent = UserAgent(cache=False, use_cache_server=False, verify_ssl=False)
 proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
 
 scraper.request_headers.update({
@@ -47,7 +47,7 @@ def get_yahoo_crypto_data():
     data = pd.DataFrame([], columns=['Symbol', 'Name', 'Price', 'Logo', 'MarketCap'])
     n_page = 0
     rows_per_page = 100
-    while n_page < 10:
+    while data.shape[0] % rows_per_page == 0 and n_page < 10:
         url = f'{domain}{uri}?offset={n_page*rows_per_page}&count={rows_per_page}'
         try:
             ret = scraper.get_result_similar(url, group_by_alias=True, keep_order=True)
