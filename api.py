@@ -6,6 +6,8 @@ import uvicorn
 from fake_useragent import UserAgent
 from fp.fp import FreeProxy
 
+from scraper import initialize_request_args
+
 
 # Initialize backend server
 app = FastAPI(
@@ -31,15 +33,7 @@ uri = '/cryptocurrencies/'
 # Load stored scraper
 scraper = AutoScraper()
 scraper.load('yahoo_crypto')
-
-# Request headers
-useragent = UserAgent(cache=False, use_cache_server=False, verify_ssl=False)
-proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
-
-scraper.request_headers.update({
-    'User-Agent': useragent.firefox,
-    'Proxies': proxy.get()
-})
+scraper.request_headers.update(initialize_request_args(url= f'{domain}{uri}',randomize=True, cookies=False))
 
 
 def get_yahoo_crypto_data():
