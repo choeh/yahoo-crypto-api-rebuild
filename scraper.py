@@ -9,44 +9,46 @@ import random
 random.seed(42)
 
 
-def initialize_request_args(url: str = ''):
-  # Initialize randomized user-agent and proxy
-  useragent = UserAgent(cache=False, use_cache_server=False)
-  proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
-  headers = {
-      'User-Agent': useragent.firefox,
-      'Proxies': proxy.get()
-  }
-  scraper_template.request_headers.update(headers)
+def initialize_request_args(url: str = '', randomize: bool = True, cookies: bool = True):
+    args = {}
+    if randomize:
+        # Initialize randomized user-agent and proxy
+        useragent = UserAgent(cache=False, use_cache_server=False)
+        proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
+        headers = {
+            'User-Agent': useragent.firefox,
+            'Proxies': proxy.get()
+        }
+        scraper_template.request_headers.update(headers)
+        args['headers'] = headers
 
-  # Initialize cookie
-  session = requests.session()
-  session.get(url, headers=scraper_template.request_headers)
-  return dict(
-    cookies = session.cookies.get_dict(),
-    headers = headers
-  )
+    if cookies:
+        # Initialize cookie
+        session = requests.session()
+        session.get(url, headers=scraper_template.request_headers)
+        args['cookies'] = session.cookies.get_dict()
+    return args
 
 
-def build_scraper(wanted: dict = {}, model_name: str = 'yahoo_crypto'):
-  # Build scrapers
-  scraper = copy(scraper_template)
-  scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(url))
+def build_scraper(wanted: dict = {}, model_name: str = '', **request_args):
+    # Build scrapers
+    scraper = copy(scraper_template)
+    scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(url, **request_args))
 
-  # Retrieve unique rules and rule aliases computationally
-  result = scraper.get_result_exact(url, grouped=True)
-  unique_rules = {val[0]: key for key, val in result.items()}
-  rules_matching_wanted = {alias: rule_id for rule_value, rule_id in unique_rules.items() for alias, wanted_values in wanted.items() if rule_value in wanted_values}
+    # Retrieve unique rules and rule aliases computationally
+    result = scraper.get_result_exact(url, grouped=True)
+    unique_rules = {val[0]: key for key, val in result.items()}
+    rules_matching_wanted = {alias: rule_id for rule_value, rule_id in unique_rules.items() for alias, wanted_values in wanted.items() if rule_value in wanted_values}
 
-  rules_to_keep = list(rules_matching_wanted.values())
-  rule_aliases = {rule_id: alias.title() for alias, rule_id in rules_matching_wanted.items()}
+    rules_to_keep = list(rules_matching_wanted.values())
+    rule_aliases = {rule_id: alias.title() for alias, rule_id in rules_matching_wanted.items()}
 
-  # Set used rules and rule aliases 
-  scraper.keep_rules(rules_to_keep)
-  scraper.set_rule_aliases(rule_aliases)
+    # Set used rules and rule aliases
+    scraper.keep_rules(rules_to_keep)
+    scraper.set_rule_aliases(rule_aliases)
 
-  # Store scraper in file
-  scraper.save(model_name)
+    # Store scraper in file
+    scraper.save(model_name)
 
 
 # Initialize autoscraper
