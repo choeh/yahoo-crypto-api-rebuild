@@ -59,10 +59,24 @@ def get_yahoo_crypto_data():
     return data
 
 
+def get_yahoo_crypto_news():
+    # Scrape news from page
+    url = f'{domain}{uri}'
+    ret = scraper.get_result_similar(url, group_by_alias=True, keep_order=True)
+    data = pd.DataFrame(ret, columns=['News', 'Urls'])
+    return data
+
+
 @app.get('/cryptos')
-def search_api():
+def crypto_data_api():
     # Api endpoint for retrieving yahoo crypto data
     data = get_yahoo_crypto_data()
+    return data.to_dict()
+
+
+@app.get('/cryptonews')
+def crypto_news_api():
+    data = get_yahoo_crypto_news()
     return data.to_dict()
 
 
