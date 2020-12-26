@@ -80,4 +80,4 @@ news_wanted = dict(
     urls=['https://finance.yahoo.com/news/bitcoin-sets-time-high-24-125722098.html', 'https://finance.yahoo.com/news/bitcoin-hit-100-000-2021-051215840.html',
           'https://finance.yahoo.com/news/crypto-daily-movers-shakers-december-010607662.html']
 )
-build_scraper(wanted=news_wanted, model_name='yahoo_crypto_news_2')
+build_scraper(wanted=news_wanted, model_name='yahoo_crypto_news')

@@ -30,10 +30,12 @@ app.add_middleware(
 domain = 'https://finance.yahoo.com'
 uri = '/cryptocurrencies/'
 
+url = f'{domain}{uri}'
+
 # Load stored scraper
 scraper = AutoScraper()
 scraper.load('yahoo_crypto')
-scraper.request_headers.update(initialize_request_args(url= f'{domain}{uri}',randomize=True, cookies=False))
+scraper.request_headers.update(initialize_request_args(url=url,randomize=True, cookies=False))
 
 
 def get_yahoo_crypto_data():
