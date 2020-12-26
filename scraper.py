@@ -30,25 +30,28 @@ def initialize_request_args(url: str = '', randomize: bool = True, cookies: bool
     return args
 
 
-def build_scraper(wanted: dict = {}, model_name: str = '', **request_args):
+def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool = True, **request_args):
     # Build scrapers
     scraper = copy(scraper_template)
     scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(url, **request_args))
 
-    # Retrieve unique rules and rule aliases computationally
-    result = scraper.get_result_exact(url, grouped=True)
-    unique_rules = {val[0]: key for key, val in result.items()}
-    rules_matching_wanted = {alias: rule_id for rule_value, rule_id in unique_rules.items() for alias, wanted_values in wanted.items() if rule_value in wanted_values}
+    if auto_ruling:
+        # Retrieve unique rules and rule aliases computationally
+        result = scraper.get_result_exact(url, grouped=True)
+        unique_rules = {val[0]: key for key, val in result.items()}
+        rules_matching_wanted = {alias: rule_id for rule_value, rule_id in unique_rules.items() for alias, wanted_values in wanted.items() if rule_value in wanted_values}
 
-    rules_to_keep = list(rules_matching_wanted.values())
-    rule_aliases = {rule_id: alias.title() for alias, rule_id in rules_matching_wanted.items()}
+        # Set used rules
+        rules_to_keep = list(rules_matching_wanted.values())
+        scraper.keep_rules(rules_to_keep)
 
-    # Set used rules and rule aliases
-    scraper.keep_rules(rules_to_keep)
-    scraper.set_rule_aliases(rule_aliases)
+        # Set used rule aliases
+        rule_aliases = {rule_id: alias.title() for alias, rule_id in rules_matching_wanted.items()}
+        scraper.set_rule_aliases(rule_aliases)
 
-    # Store scraper in file
-    scraper.save(model_name)
+    if model_name:
+        # Store scraper in file
+        scraper.save(model_name)
 
 
 # Initialize autoscraper
