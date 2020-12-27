@@ -2,38 +2,36 @@ from autoscraper import AutoScraper
 import requests
 from fake_useragent import UserAgent
 from fp.fp import FreeProxy
-from copy import copy
 
 # Same rule ids for each run
 import random
 random.seed(42)
 
 
-def initialize_request_args(url: str = '', randomize: bool = True, cookies: bool = True):
+def initialize_request_args(headers, url: str = '', randomize: bool = True, cookies: bool = True):
     args = {}
     if randomize:
         # Initialize randomized user-agent and proxy
         useragent = UserAgent(cache=False, use_cache_server=False)
         proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
-        headers = {
+        headers.update({
             'User-Agent': useragent.firefox,
             'Proxies': proxy.get()
-        }
-        scraper_template.request_headers.update(headers)
+        })
         args['headers'] = headers
 
     if cookies:
         # Initialize cookie
         session = requests.session()
-        session.get(url, headers=scraper_template.request_headers)
+        session.get(url, headers=headers)
         args['cookies'] = session.cookies.get_dict()
     return args
 
 
 def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool = True, **request_args):
     # Build scrapers
-    scraper = copy(scraper_template)
-    scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(url, **request_args))
+    scraper = AutoScraper()
+    scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(headers=scraper.request_headers, url=url, **request_args))
 
     if auto_ruling:
         # Retrieve unique rules and rule aliases computationally
@@ -53,9 +51,6 @@ def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool =
         # Store scraper in file
         scraper.save(model_name)
 
-
-# Initialize autoscraper
-scraper_template = AutoScraper()
 
 # Screener url
 domain = 'https://finance.yahoo.com'
