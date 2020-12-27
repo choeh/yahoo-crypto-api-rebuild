@@ -8,17 +8,17 @@ import random
 random.seed(42)
 
 
-def initialize_request_args(headers, url: str = '', randomize: bool = True, cookies: bool = True):
+def init_request_args(headers, url: str = '', randomize: bool = True, cookies: bool = True):
     args = {}
     if randomize:
-        # Initialize randomized user-agent and proxy
+        # Get randomized user-agent
         useragent = UserAgent(cache=False, use_cache_server=False)
+        args['headers'] = {'User-Agent': useragent.random}
+        # Get randomized proxy
         proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
-        headers.update({
-            'User-Agent': useragent.firefox,
-            'Proxies': proxy.get()
-        })
-        args['headers'] = headers
+        proxy = proxy.get()
+        if 'There are no working proxies' not in proxy:
+            args['headers']['Proxies'] = proxy
 
     if cookies:
         # Initialize cookie
@@ -31,7 +31,8 @@ def initialize_request_args(headers, url: str = '', randomize: bool = True, cook
 def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool = True, **request_args):
     # Build scrapers
     scraper = AutoScraper()
-    scraper.build(url, wanted_dict=wanted, request_args=initialize_request_args(headers=scraper.request_headers, url=url, **request_args))
+    request_args = init_request_args(headers=scraper.request_headers, url=url, **request_args)
+    scraper.build(url, wanted_dict=wanted, request_args=request_args)
 
     if auto_ruling:
         # Retrieve unique rules and rule aliases computationally
