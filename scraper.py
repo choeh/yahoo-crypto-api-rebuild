@@ -53,6 +53,20 @@ def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool =
         scraper.save(model_name)
 
 
+def run_scraper(url: str = '', model_name: str = None, exact_match: bool = False):
+    # Load scraper
+    scraper = AutoScraper()
+    scraper.load(model_name)
+    request_args = init_request_args(headers=scraper.request_headers, url=url)
+
+    # Run scraping 
+    if exact_match:
+        data = scraper.get_result_exact(url, group_by_alias=True, request_args=request_args)
+    else:
+        data = scraper.get_result_similar(url, group_by_alias=True, keep_order=True, request_args=request_args)
+    return data
+
+
 # Screener url
 domain = 'https://finance.yahoo.com'
 uri = '/cryptocurrencies/'
@@ -68,6 +82,7 @@ data_wanted = dict(
     marketcap=['438.857B']
 )
 build_scraper(wanted=data_wanted, model_name='yahoo_crypto_data')
+data = run_scraper(url, model_name='yahoo_crypto_data')
 
 # Yahoo Crypto News Scraper
 news_wanted = dict(
@@ -77,3 +92,4 @@ news_wanted = dict(
           'https://finance.yahoo.com/news/crypto-daily-movers-shakers-december-010607662.html']
 )
 build_scraper(wanted=news_wanted, model_name='yahoo_crypto_news')
+news_data = run_scraper(url, model_name='yahoo_crypto_news')
