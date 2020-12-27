@@ -14,6 +14,7 @@ def init_request_args(headers, url: str = '', randomize: bool = True, cookies: b
         # Get randomized user-agent
         useragent = UserAgent(cache=False, use_cache_server=False)
         args['headers'] = {'User-Agent': useragent.random}
+        
         # Get randomized proxy
         proxy = FreeProxy(country_id=['US', 'GB', 'DE'], timeout=1, anonym=True, rand=True)
         proxy = proxy.get()
@@ -28,10 +29,10 @@ def init_request_args(headers, url: str = '', randomize: bool = True, cookies: b
     return args
 
 
-def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool = True, **request_args):
+def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool = True):
     # Build scrapers
     scraper = AutoScraper()
-    request_args = init_request_args(headers=scraper.request_headers, url=url, **request_args)
+    request_args = init_request_args(headers=scraper.request_headers, url=url)
     scraper.build(url, wanted_dict=wanted, request_args=request_args)
 
     if auto_ruling:
