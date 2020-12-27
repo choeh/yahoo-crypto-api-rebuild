@@ -39,7 +39,7 @@ scraper.request_headers.update(initialize_request_args(url=url,randomize=True, c
 
 
 def get_yahoo_crypto_data():
-    # Scrape entries from all subpages
+    # Scrape table entries from all subpages
     data = pd.DataFrame([], columns=['Symbol', 'Name', 'Price', 'Logo', 'MarketCap'])
     n_page = 0
     rows_per_page = 100
@@ -72,6 +72,7 @@ def crypto_data_api():
 
 @app.get('/cryptonews')
 def crypto_news_api():
+    # Api endpoint for retrieving yahoo crypto news
     data = get_yahoo_crypto_news()
     return data.to_dict()
 
