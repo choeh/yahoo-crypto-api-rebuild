@@ -74,6 +74,7 @@ uri = '/cryptocurrencies/'
 url = f'{domain}{uri}'
 
 # Yahoo Crypto Data Scraper
+scraper_name = 'yahoo_crypto_data'
 data_wanted = dict(
     symbol=['BTC-USD'],
     name=['Bitcoin USD'],
@@ -81,15 +82,16 @@ data_wanted = dict(
     logo=['https://s.yimg.com/uc/fin/img/reports-thumbnails/1.png'],
     marketcap=['438.857B']
 )
-build_scraper(wanted=data_wanted, model_name='yahoo_crypto_data')
-data = run_scraper(url, model_name='yahoo_crypto_data')
+build_scraper(wanted=data_wanted, model_name=scraper_name)
+data = run_scraper(url, model_name=scraper_name)
 
 # Yahoo Crypto News Scraper
+scraper_name = 'yahoo_crypto_news'
 news_wanted = dict(
     news=['Bitcoin Tops $24.6K on Christmas Day, Sets New All-Time High',
           'Can Bitcoin Hit $100,000 in 2021? Regulators and the Bulls may have to Battle it out!', 'The Crypto Daily – Movers and Shakers – December 25th, 2020'],
     urls=['https://finance.yahoo.com/news/bitcoin-sets-time-high-24-125722098.html', 'https://finance.yahoo.com/news/bitcoin-hit-100-000-2021-051215840.html',
           'https://finance.yahoo.com/news/crypto-daily-movers-shakers-december-010607662.html']
 )
-build_scraper(wanted=news_wanted, model_name='yahoo_crypto_news')
-news_data = run_scraper(url, model_name='yahoo_crypto_news')
+build_scraper(wanted=news_wanted, model_name=scraper_name)
+news_data = run_scraper(url, model_name=scraper_name)
