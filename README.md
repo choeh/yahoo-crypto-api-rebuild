@@ -17,7 +17,7 @@ docker build -t yahoo-crypto-api .
 ```
 To start a *Docker* container, run:
 ```shell
-docker run --name scraper-api yahoo-crypto-api
+docker run -p 8080:8080 --name scraper-api yahoo-crypto-api
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ If you do so, be aware that the `wanted_dict` entries in `scraper.py` have to be
 
 It is best to load the existing, pretrained *Scraper*, stored in the `yahoo_crypto` file.
 
-To start the `FastAPI` *Server* run:
+The `FastAPI` *Server* is started in a *Docker* container (if setup is done with *Docker*) or can be started with running:
 ```python
 python api.py
 ```
