@@ -27,7 +27,7 @@ python scraper.py
 ```
 If you do so, be aware that the `wanted_dict` entries in `scraper.py` have to be updated *directly before* running the scraper.
 
-It is best to load the existing, pretrained *Scraper*, stored in the `yahoo_crypto` file.
+It is best to load the existing, pretrained *Scrapers*, which are stored in the `json` files.
 
 The `FastAPI` *Server* is started in a *Docker* container (if setup is done with *Docker*) or can be started with running:
 ```python
@@ -36,7 +36,9 @@ python api.py
 
 To check if the server is running, checkout the *Api Documentation* at `http://localhost:8080/docs` in your browser.
 
-To retrieve the current `Yahoo Cryptocurrency` data, call the `http://localhost:8080/cryptos` api endpoint via your [Postman](https://www.postman.com) or [Insomnia](https://insomnia.rest) application or use your browser.
+To retrieve the current `Yahoo Cryptocurrency` data, call the `http://localhost:8080/cryptos` api endpoint. To retrieve the current `Yahoo Cryptocurrency` news, call the `http://localhost:8080/cryptonews` api endpoint. 
+
+Api endpoints can easily be called via [Postman](https://www.postman.com) or [Insomnia](https://insomnia.rest) application or from the browser.
 
 
 ## Alternatives
