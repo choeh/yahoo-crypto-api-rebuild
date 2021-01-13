@@ -51,13 +51,13 @@ def build_scraper(wanted: dict = {}, model_name: str = None, auto_ruling: bool =
 
     if model_name:
         # Store scraper in file
-        scraper.save(model_name)
+        scraper.save(f'{model_name}.json')
 
 
 def run_scraper(url: str = '', model_name: str = None, exact_match: bool = False):
     # Load scraper
     scraper = AutoScraper()
-    scraper.load(model_name)
+    scraper.load(f'{model_name}.json')
     request_args = init_request_args(headers=scraper.request_headers, url=url)
 
     # Run scraping 
